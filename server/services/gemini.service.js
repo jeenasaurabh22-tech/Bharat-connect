@@ -36,7 +36,7 @@ class GeminiService {
     }
 
     try {
-      const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
       const result = await model.embedContent(text);
       if (result && result.embedding && result.embedding.values) {
         return result.embedding.values;
@@ -57,7 +57,7 @@ class GeminiService {
 
     try {
       const model = genAI.getGenerativeModel({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.5-flash',
         systemInstruction: systemInstruction || undefined,
       });
 
@@ -79,7 +79,7 @@ class GeminiService {
 
     try {
       const model = genAI.getGenerativeModel({
-        model: 'gemini-1.5-pro',
+        model: 'gemini-3.5-flash',
         systemInstruction: systemInstruction || undefined,
       });
 
