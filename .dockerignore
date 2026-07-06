@@ -1,0 +1,28 @@
+# Exclude node_modules from build context (Docker will install them inside the container)
+node_modules
+client/node_modules
+server/node_modules
+
+# Exclude local build artifacts and uploads
+client/dist
+server/public
+server/uploads
+uploads
+
+# Exclude source control and config files
+.git
+.github
+.gitignore
+.dockerignore
+docker-compose*
+LICENSE
+README.md
+
+# Exclude local environment secrets and logs
+.env*
+server/.env
+client/.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log

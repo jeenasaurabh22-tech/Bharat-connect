@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Primary SEO -->
+    <title>BharatConnect — Find government schemes built for you</title>
+    <meta name="description" content="Discover 500+ central and state government schemes you qualify for. Upload documents once, check eligibility in seconds, and apply — all in one place." />
+    <meta name="keywords" content="government schemes, India, PM Kisan, Ayushman Bharat, eligibility checker, Digital India, citizen portal" />
+    <meta name="author" content="Ministry of Digital Governance" />
+    <meta name="theme-color" content="#4f46e5" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="BharatConnect — Find government schemes built for you" />
+    <meta property="og:description" content="Discover 500+ central and state government schemes you qualify for. Check eligibility in seconds." />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BharatConnect — Find government schemes built for you" />
+    <meta name="twitter:description" content="Discover 500+ central and state government schemes you qualify for. Check eligibility in seconds." />
+
+    <!-- Fonts: preconnect first, then load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FOUC prevention: apply saved theme before first paint -->
+    <script>
+      (function () {
+        var t = localStorage.getItem('theme') || 'dark';
+        if (t === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
+  </head>
+  <body class="antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

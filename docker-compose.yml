@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # ─────────────────────────────────────────────
+  # MongoDB (Local Dev Only)
+  # In production, replace MONGODB_URI with Atlas
+  # ─────────────────────────────────────────────
+  mongo:
+    image: mongo:6.0
+    container_name: bharatconnect-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: bharatconnect
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+  # ─────────────────────────────────────────────
+  # Redis (Local Dev Only)
+  # In production, replace REDIS_HOST with Upstash
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7.0-alpine
+    container_name: bharatconnect-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass redispassword123
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  # ─────────────────────────────────────────────
+  # Backend (Node.js / Express)
+  # ─────────────────────────────────────────────
+  backend:
+    build: ./server
+    container_name: bharatconnect-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - CLIENT_URL=http://localhost:5173
+
+      # ── Database ──────────────────────────────
+      # For local: uses the mongo container above
+      - MONGODB_URI=mongodb://root:password123@mongo:27017/bharatconnect?authSource=admin
+      # For AWS production, replace above with Atlas URI:
+      # - MONGODB_URI=mongodb+srv://produser:YourPassword@cluster0.abcde.mongodb.net/bharatconnect?retryWrites=true&w=majority
+
+      # ── Redis ─────────────────────────────────
+      # For local: uses the redis container above
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redispassword123
+      # For AWS production, replace above with Upstash credentials:
+      # - REDIS_HOST=your-upstash-host.upstash.io
+      # - REDIS_PORT=31234
+      # - REDIS_PASSWORD=your-upstash-password
+
+      # ── JWT ───────────────────────────────────
+      - JWT_ACCESS_SECRET=your_jwt_access_secret_key_must_be_long_and_secure_for_bharatconnect_ai
+      - JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_must_be_long_and_secure_for_bharatconnect_ai
+      - JWT_ACCESS_EXPIRY=15m
+      - JWT_REFRESH_EXPIRY=7d
+
+      # ── External APIs ─────────────────────────
+      - GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+      - CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+      - CLOUDINARY_API_KEY=your_cloudinary_api_key
+      - CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+      # ── Email (SMTP) ──────────────────────────
+      - SMTP_HOST=smtp.mailtrap.io
+      - SMTP_PORT=2525
+      - SMTP_USER=your_smtp_username
+      - SMTP_PASS=your_smtp_password
+      - SMTP_FROM=no-reply@bharatconnect.gov.in
+
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - app-network
+
+  # ─────────────────────────────────────────────
+  # Frontend (React / Vite)
+  # ─────────────────────────────────────────────
+  frontend:
+    build: ./client
+    container_name: bharatconnect-frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# ─────────────────────────────────────────────
+# Volumes
+# ─────────────────────────────────────────────
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ─────────────────────────────────────────────
+# Networks
+# ─────────────────────────────────────────────
+networks:
+  app-network:
+    driver: bridge

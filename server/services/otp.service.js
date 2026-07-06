@@ -1,14 +1,10 @@
 import crypto from 'crypto';
 import redisClient from '../config/redis.js';
 import logger from '../config/logger.js';
-
 class OtpService {
-  // Generate a random 6-digit numeric OTP
   generateOTP() {
     return crypto.randomInt(100000, 999999).toString();
   }
-
-  // Store OTP in Redis with a 5-minute (300 seconds) expiration time
   async storeOTP(email, otp) {
     const key = `otp:${email.toLowerCase()}`;
     try {
@@ -20,8 +16,6 @@ class OtpService {
       throw error;
     }
   }
-
-  // Retrieve OTP and verify
   async verifyOTP(email, otp) {
     const key = `otp:${email.toLowerCase()}`;
     try {
@@ -30,10 +24,8 @@ class OtpService {
         logger.warn(`OTP verification failed: OTP expired or not found for ${email}`);
         return false;
       }
-      
       const isMatch = storedOtp === otp;
       if (isMatch) {
-        // Delete OTP from Redis once verified
         await redisClient.del(key);
         logger.info(`Verified & deleted OTP for ${email}`);
       } else {
@@ -46,5 +38,4 @@ class OtpService {
     }
   }
 }
-
 export default new OtpService();

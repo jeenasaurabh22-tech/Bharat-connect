@@ -2,16 +2,13 @@ import User from '../models/User.model.js';
 import Scheme from '../models/Scheme.model.js';
 import Application from '../models/Application.model.js';
 import auditLogRepository from '../repositories/AuditLogRepository.js';
-
 export const getAuditLogs = async (req, res, next) => {
   try {
     const { limit = '50', page = '1' } = req.query;
     const limitNum = parseInt(limit, 10) || 50;
     const pageNum = parseInt(page, 10) || 1;
     const skipNum = (pageNum - 1) * limitNum;
-
     const { logs, total } = await auditLogRepository.getRecentLogs(limitNum, skipNum);
-
     res.status(200).json({
       logs,
       total,
@@ -23,7 +20,6 @@ export const getAuditLogs = async (req, res, next) => {
     next(error);
   }
 };
-
 export const getAnalytics = async (req, res, next) => {
   try {
     // 1. User role counts
@@ -35,7 +31,6 @@ export const getAnalytics = async (req, res, next) => {
         },
       },
     ]);
-
     const users = {
       citizen: 0,
       officer: 0,
@@ -46,7 +41,6 @@ export const getAnalytics = async (req, res, next) => {
         users[group._id] = group.count;
       }
     });
-
     // 2. Application status counts
     const appStatusCounts = await Application.aggregate([
       {
@@ -56,7 +50,6 @@ export const getAnalytics = async (req, res, next) => {
         },
       },
     ]);
-
     const applications = {
       Draft: 0,
       Submitted: 0,
@@ -74,7 +67,6 @@ export const getAnalytics = async (req, res, next) => {
       }
     });
     applications.total = totalApps;
-
     // 3. Scheme category breakdown
     const schemeCategoryCounts = await Scheme.aggregate([
       {
@@ -84,19 +76,16 @@ export const getAnalytics = async (req, res, next) => {
         },
       },
     ]);
-
     const schemesByCategory = {};
     let totalSchemes = 0;
     schemeCategoryCounts.forEach((group) => {
       schemesByCategory[group._id] = group.count;
       totalSchemes += group.count;
     });
-
     // 4. Monthly user registration trends (last 6 months)
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
     sixMonthsAgo.setDate(1); // Set to start of month
-
     const registrationTrends = await User.aggregate([
       {
         $match: {
@@ -119,7 +108,6 @@ export const getAnalytics = async (req, res, next) => {
         },
       },
     ]);
-
     const formattedTrends = registrationTrends.map((trend) => {
       const monthNames = [
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -130,7 +118,6 @@ export const getAnalytics = async (req, res, next) => {
         registrations: trend.count,
       };
     });
-
     res.status(200).json({
       metrics: {
         users,

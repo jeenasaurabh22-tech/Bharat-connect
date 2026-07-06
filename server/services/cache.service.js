@@ -1,8 +1,6 @@
 import redisClient from '../config/redis.js';
 import logger from '../config/logger.js';
-
 class CacheService {
-  // Get item from cache
   async get(key) {
     try {
       if (!redisClient.isOpen) return null;
@@ -18,8 +16,6 @@ class CacheService {
       return null;
     }
   }
-
-  // Set item in cache with TTL (seconds)
   async set(key, value, ttl = 3600) {
     try {
       if (!redisClient.isOpen) return false;
@@ -31,8 +27,6 @@ class CacheService {
       return false;
     }
   }
-
-  // Delete item from cache
   async del(key) {
     try {
       if (!redisClient.isOpen) return false;
@@ -44,12 +38,9 @@ class CacheService {
       return false;
     }
   }
-
-  // Clear all caches matching a prefix (e.g. schemes:search:*)
   async clearPrefix(prefix) {
     try {
       if (!redisClient.isOpen) return false;
-      // Fetch keys using SCAN to prevent blocking the Redis event loop
       let cursor = 0;
       let count = 0;
       do {
@@ -64,7 +55,6 @@ class CacheService {
           count += keys.length;
         }
       } while (cursor !== 0);
-
       logger.info(`Cleared ${count} cached items with prefix: ${prefix}`);
       return true;
     } catch (error) {
@@ -73,5 +63,4 @@ class CacheService {
     }
   }
 }
-
 export default new CacheService();

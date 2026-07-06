@@ -1,14 +1,11 @@
 import nodemailer from 'nodemailer';
 import logger from '../config/logger.js';
-
 class EmailService {
   constructor() {
-    // If SMTP settings are default placeholders, we'll run in mock mode
     const isMock =
       !process.env.SMTP_USER ||
       process.env.SMTP_USER === 'your_smtp_username' ||
       process.env.NODE_ENV === 'test';
-
     if (isMock) {
       logger.info('EmailService: Running in MOCK mode. Emails will be logged to the console.');
       this.transporter = null;
@@ -24,7 +21,6 @@ class EmailService {
       logger.info('EmailService: Running in SMTP mode.');
     }
   }
-
   async sendEmail({ to, subject, html, text }) {
     if (!this.transporter) {
       logger.info(`
@@ -36,7 +32,6 @@ Text: ${text || 'Check HTML content'}
       `);
       return { messageId: 'mock-id-123' };
     }
-
     try {
       const info = await this.transporter.sendMail({
         from: process.env.SMTP_FROM || '"BharatConnect AI" <no-reply@bharatconnect.gov.in>',
@@ -52,7 +47,6 @@ Text: ${text || 'Check HTML content'}
       throw error;
     }
   }
-
   async sendVerificationOTP(email, otp) {
     const subject = 'BharatConnect AI - Email Verification OTP';
     const text = `Verify your email. Your OTP code is: ${otp}. It will expire in 5 minutes.`;
@@ -66,10 +60,8 @@ Text: ${text || 'Check HTML content'}
         <p style="color: #64748b; font-size: 14px;">This code is valid for 5 minutes. If you did not request this, please ignore this email.</p>
       </div>
     `;
-
     return this.sendEmail({ to: email, subject, text, html });
   }
-
   async sendPasswordResetOTP(email, otp) {
     const subject = 'BharatConnect AI - Password Reset OTP';
     const text = `Reset your password. Your OTP code is: ${otp}. It will expire in 5 minutes.`;
@@ -83,9 +75,7 @@ Text: ${text || 'Check HTML content'}
         <p style="color: #64748b; font-size: 14px;">This code is valid for 5 minutes. If you did not request this, please ignore this email.</p>
       </div>
     `;
-
     return this.sendEmail({ to: email, subject, text, html });
   }
 }
-
 export default new EmailService();
